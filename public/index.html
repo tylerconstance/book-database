@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sample App</title>
+</head>
+<body>
+  <h1>Hello, world.</h1>
+  <input id="booktitle" type="text" placeholder="Book Title">
+  <input type="text" id="author" placeholder="Book Author">
+  <input type="number" id="isbn" placeholder="ISBN">
+  <div style="cursor: pointer; margin: 15px 0;" id="pseudo-submit">Add this book to the database</div>
+  <div style="cursor: pointer; display: none;" id="wtf">Click me to make a sample entry</div>
+
+  <script>
+
+  document.getElementById('pseudo-submit').onclick=function(){
+    if (document.getElementById('booktitle').value && document.getElementById('author').value && document.getElementById('isbn').value) {
+      var myTitle = document.getElementById('booktitle').value;
+      var myAuthor = document.getElementById('author').value;
+      var myISBN = document.getElementById('isbn').value;
+      var book = {
+        title: myTitle,
+        author: myAuthor,
+        isbn: myISBN
+      }
+      var book_json = JSON.stringify(book);
+      createNewBook(book_json);
+    } else {
+      alert("You missed a field.");
+    }
+  }
+
+  document.getElementById('wtf').onclick=function(){
+    var wtf = {
+      title: "Whiskey Tango Foxtrot",
+      author: "David Shafter",
+      isbn: 0316252654
+    }
+    var wtf_srsly = JSON.stringify(wtf);
+    createNewBook(wtf_srsly);
+  }
+
+  var Ajax = {
+  xhr : null,
+  request : function (url,method, data,success,failure){
+      if (!this.xhr){
+          this.xhr = window.ActiveX ? new ActiveXObject("Microsoft.XMLHTTP"): new XMLHttpRequest();
+      }
+      var self = this.xhr;
+
+      self.onreadystatechange = function () {
+          if (self.readyState === 4 && self.status === 200){
+              // the request is complete, parse data and call callback
+              var response = JSON.parse(self.responseText);
+              success(response);
+          }else if (self.readyState === 4) { // something went wrong but complete
+              failure();
+          }
+        };
+        this.xhr.open(method,url,true);
+        if (data) {
+          this.xhr.send(data);
+        } else {
+          this.xhr.send();
+        }
+
+      },
+    };
+
+  function createNewBook(item) {
+    Ajax.request(
+      '/books',
+      'POST',
+      item,
+      function(data) {
+        console.log("Success!");
+      },
+      function() {
+        console.log("Failure. Tried this:");
+        console.log(item);
+      }
+    )
+  };
+
+  </script>
+</body>
+</html>
