@@ -1,4 +1,4 @@
-# CRUD.
+# Book Database.
 
 I followed [this](http://mph-web.de/build-a-restful-api-using-hapi-js-and-mongodb/) tutorial to refresh myself on writing an API with Hapi.js.
 
